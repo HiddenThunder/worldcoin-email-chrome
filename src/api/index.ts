@@ -1,6 +1,7 @@
 import { debug } from "../utils/logger";
 
 const API_URL = "https://worldcoinemail.org/api";
+// const API_URL = "http://localhost:3000/api";
 
 // ## API Reference
 
@@ -37,7 +38,7 @@ export const getAuthHeaders = async () => {
   }
 
   return {
-    Authorization: `Bearer ${token}`,
+    "X-Fake-Header": `Bearer ${token}`,
   };
 };
 
@@ -47,6 +48,7 @@ export const verify = async (hash: string) => {
   const response = await fetch(`${API_URL}/verify-email/${hash}`, {
     headers,
   });
+
   return await response.json();
 };
 
