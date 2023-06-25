@@ -1,6 +1,6 @@
 {
-  "name": "Example Gmail Extension",
-  "description": "Example extension showing use of the Streak Gmail SDK",
+  "name": "Worldcoin Email",
+  "description": "Anti-spam email addon that makes sure emails were sent by a real human.",
   "version": "0.1",
   "content_scripts": [
     {
