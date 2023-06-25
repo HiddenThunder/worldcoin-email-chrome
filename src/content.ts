@@ -33,12 +33,15 @@ const setupSDK = (sdk: InboxSDK) => {
     debug("threadRowView.getThreadID()", threadId);
 
     threadRowView.getThreadIDAsync;
+    const crossmarkUrl =
+      "https://em-content.zobj.net/thumbs/240/apple/354/cross-mark_274c.png";
+    const checkmarkUrl =
+      "https://em-content.zobj.net/thumbs/240/apple/354/check-mark-button_2705.png";
+    const greyCheckmarkUrl =
+      "https://em-content.zobj.net/thumbs/240/apple/354/check-box-with-check_2611-fe0f.png";
 
     threadRowView.addImage({
-      imageUrl:
-        "https://em-content.zobj.net/thumbs/240/apple/354/check-box-with-check_2611-fe0f.png",
-      // "https://em-content.zobj.net/thumbs/240/apple/354/check-box-with-check_2611-fe0f.png",
-      // "https://lh5.googleusercontent.com/itq66nh65lfCick8cJ-OPuqZ8OUDTIxjCc25dkc4WUT1JG8XG3z6-eboCu63_uDXSqMnLRdlvQ=s128-h128-e365",
+      imageUrl: Math.random() > 0.3 ? crossmarkUrl : checkmarkUrl,
       tooltip: "Worldcoin Email",
       imageClass: "worldcoin-email-icon",
     });
