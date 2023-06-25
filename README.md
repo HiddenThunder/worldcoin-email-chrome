@@ -6,6 +6,12 @@ Spam in email. Allow people to verify that message was sent by a real person, an
 
 Non-users benefit from the same feature, seeing signature + verification link in the footer + reputation score for that sender at that link
 
+## Installation
+
+Download and unpack from Releases page (https://github.com/worldcoin-email/extension/releases)
+
+Turn on Developer mode on `chrome://extensions`, click "Load unpacked", and pick the "dist" unzipped directory.
+
 ## Architecture
 
 - Chrome extension

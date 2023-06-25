@@ -1,7 +1,7 @@
 {
-  "name": "hello-world",
-  "version": "0.1.0",
-  "description": "InboxSDK test extension",
+  "name": "worldcoin-email-extension",
+  "version": "0.2.0",
+  "description": "Antispam email extension",
   "private": true,
   "browserslist": "last 4 Chrome versions",
   "scripts": {

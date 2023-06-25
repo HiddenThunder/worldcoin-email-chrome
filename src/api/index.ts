@@ -1,7 +1,7 @@
 import { debug } from "../utils/logger";
 
-// const API_URL = "https://worldcoinemail.org/api";
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://worldcoinemail.org/api";
+// const API_URL = "http://localhost:3000/api";
 
 // ## API Reference
 

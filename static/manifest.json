@@ -1,7 +1,7 @@
 {
   "name": "Worldcoin Email",
   "description": "Anti-spam email addon that makes sure emails were sent by a real human.",
-  "version": "0.1",
+  "version": "0.2",
   "content_scripts": [
     {
       "matches": [
