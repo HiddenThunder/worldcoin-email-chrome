@@ -58,16 +58,27 @@ const verifyMessage = async (messageView: MessageView) => {
   debug("metadataHTML", { sender, recipients, bodyHTML });
 
   // TODO: is there an attack vector here? two different emails with the same hash due to using metadata in the body html?
-  const email =
-    recipients.map(toString).join(";") + toString(sender) + bodyHTML.outerHTML;
+  const email = recipients.map(toString).join(";") + toString(sender); //  + bodyHTML.outerHTML;
+
+  debug("[email]", email);
 
   const hash = calculateHash(email);
 
   debug("hash", hash);
 
-  const isValid = await verify(hash);
+  const { isRealHuman, rep } = await verify(hash);
 
-  debug("isValid", isValid);
+  debug("isValid", isRealHuman, rep);
+
+  bodyHTML.innerHTML =
+    `
+    This message was scanned by Worldcoin Email 🌎:
+    <br />
+    ${isRealHuman ? "✅✅✅" : "❌❌❌"}
+    <br />
+    -----------------------------------------------
+    <br />
+  ` + bodyHTML.innerHTML;
 };
 
 const addButtonComposeView = (composeView: ComposeView) => {
@@ -94,13 +105,13 @@ const addButtonComposeView = (composeView: ComposeView) => {
     const bodyHTML = composeView.getBodyElement();
 
     // TODO: is there an attack vector here? two different emails with the same hash due to using metadata in the body html?
-    const email =
-      recipients.map(toString).join(";") +
-      toString(sender) +
-      bodyHTML.outerHTML;
+    const email = recipients.map(toString).join(";") + toString(sender); // + bodyHTML.outerHTML;
+
+    debug("[email]", email);
 
     const hash = calculateHash(email);
 
+    debug("hash", hash);
     const signature = getSignature(hash);
 
     debug("signature", signature);
@@ -108,21 +119,24 @@ const addButtonComposeView = (composeView: ComposeView) => {
     composeView.setBodyHTML(bodyHTML.outerHTML + signature);
 
     // TODO: send into api and check response, if it fails, throw error and stop sending
-    try {
-      const isSuccess = send(hash);
 
-      if (true) {
-        throw new Error("Email not sent");
+    (async () => {
+      try {
+        const isSuccess = await send(hash);
+
+        if (!isSuccess) {
+          throw new Error("Email not sent");
+        }
+      } catch (error) {
+        debug("error", error);
+
+        // TODO: event.cancel();
       }
-    } catch (error) {
-      debug("error", error);
-
-      event.cancel();
-    }
+    })();
   });
 
   composeView.on("destroy", function (event: any) {
-    console.log("compose view going away, time to clean up");
+    debug("compose view going away, time to clean up");
   });
 };
 
