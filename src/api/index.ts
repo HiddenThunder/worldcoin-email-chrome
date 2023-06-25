@@ -1,3 +1,5 @@
+import { debug } from "../utils/logger";
+
 const API_URL = "https://worldcoinemail.org/api";
 
 // ## API Reference
@@ -13,12 +15,47 @@ const API_URL = "https://worldcoinemail.org/api";
 // - POST `/api/email/:hash/:nonce/send` creates Email, only email hash and nonce is required
 // - ? PUT `/api/email/:hash/report` adds ReputationStrike (from specific user, to user)
 
+// export const setAuth = async (token: string) => {
+//   chrome.storage.local.get({ token })
+
+// };
+
+export const getAuthHeaders = async () => {
+  // @ts-ignore
+  const { token } = await chrome.storage.local.get(["token"]);
+
+  debug("token", token);
+
+  if (!token) {
+    // open https://worldcoinemail.org/auth
+    // wait for token
+    // save token
+    // @ts-ignore
+    chrome.tabs.create({ url: "https://worldcoinemail.org/auth" });
+
+    throw new Error("No token found");
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
 export const verify = async (hash: string) => {
-  const response = await fetch(`${API_URL}/email/${hash}/verify`);
+  const headers = await getAuthHeaders();
+
+  const response = await fetch(`${API_URL}/verify-email/${hash}`, {
+    headers,
+  });
   return await response.json();
 };
 
 export const send = async (hash: string) => {
-  const response = await fetch(`${API_URL}/email/${hash}/send`);
+  const headers = await getAuthHeaders();
+
+  const response = await fetch(`${API_URL}/send-email/${hash}`, {
+    headers,
+  });
+
   return await response.json();
 };

@@ -5,7 +5,9 @@
   "content_scripts": [
     {
       "matches": [
-        "https://mail.google.com/*"
+        "https://mail.google.com/*",
+        "https://worldcoinemail.org/*",
+        "http://localhost:3000/*"
       ],
       "js": ["content.js"],
       "run_at": "document_end"
@@ -15,7 +17,9 @@
     "service_worker": "background.js"
   },
   "permissions": [
-    "scripting"
+    "scripting",
+    "storage",
+    "activeTab"
   ],
   "host_permissions": [
     "https://mail.google.com/"

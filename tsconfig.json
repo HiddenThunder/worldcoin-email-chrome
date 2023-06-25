@@ -15,6 +15,10 @@
     "noEmit": false,
     "jsx": "react"
   },
+  "types": [
+    //(various types, e.g. jquery, core-js),
+    "chrome"
+  ],
   "include": ["src"],
   "exclude": ["build", "node_modules"]
 }

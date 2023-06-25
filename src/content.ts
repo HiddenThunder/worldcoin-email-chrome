@@ -1,7 +1,10 @@
+import "./capture-token";
+
 import { load, InboxSDK } from "@inboxsdk/core";
 
-import { ComposeView } from "@inboxsdk/core/src/platform-implementation-js/driver-interfaces/driver";
-import { MessageView } from "@inboxsdk/core/src/platform-implementation-js/platform-implementation";
+import { MessageView, ComposeView, Contact } from "@inboxsdk/core/src/inboxsdk";
+
+import { send, verify } from "./api/index";
 
 import { debug } from "./utils/logger";
 import { getSignature } from "./utils/signature";
@@ -9,10 +12,14 @@ import { calculateHash } from "./utils/hash";
 
 debug("content script loaded");
 
+const toString = (contact: Contact) => {
+  return `${contact.name} <${contact.emailAddress}>`;
+};
+
 const setupSDK = (sdk: InboxSDK) => {
   sdk.Compose.registerComposeViewHandler(addButtonComposeView);
 
-  sdk.Conversations.registerMessageViewHandler(filterMessages);
+  sdk.Conversations.registerMessageViewHandler(verifyMessage);
 
   sdk.Lists.registerThreadRowViewHandler((threadRowView) => {
     // a thread row view has come into existence, do something with it!
@@ -29,23 +36,38 @@ const setupSDK = (sdk: InboxSDK) => {
 
     threadRowView.addImage({
       imageUrl:
-        "https://lh5.googleusercontent.com/itq66nh65lfCick8cJ-OPuqZ8OUDTIxjCc25dkc4WUT1JG8XG3z6-eboCu63_uDXSqMnLRdlvQ=s128-h128-e365",
+        "https://em-content.zobj.net/thumbs/240/apple/354/check-box-with-check_2611-fe0f.png",
+      // "https://em-content.zobj.net/thumbs/240/apple/354/check-box-with-check_2611-fe0f.png",
+      // "https://lh5.googleusercontent.com/itq66nh65lfCick8cJ-OPuqZ8OUDTIxjCc25dkc4WUT1JG8XG3z6-eboCu63_uDXSqMnLRdlvQ=s128-h128-e365",
       tooltip: "Worldcoin Email",
       imageClass: "worldcoin-email-icon",
-
-      // onClick: () => {
-      //   debug("clicked");
-      // }
     });
   });
 };
 
-const filterMessages = async (messageView: MessageView) => {
-  const view = await messageView.getThreadView();
+const verifyMessage = async (messageView: MessageView) => {
+  debug("messageView", messageView);
 
-  const all = await view.getMessageViewsAll();
+  (window as any).messageView = messageView;
 
-  debug("all", all);
+  const sender = messageView.getSender();
+  const recipients = await messageView.getRecipientsFull();
+  // const subject = messageView
+  const bodyHTML = messageView.getBodyElement();
+
+  debug("metadataHTML", { sender, recipients, bodyHTML });
+
+  // TODO: is there an attack vector here? two different emails with the same hash due to using metadata in the body html?
+  const email =
+    recipients.map(toString).join(";") + toString(sender) + bodyHTML.outerHTML;
+
+  const hash = calculateHash(email);
+
+  debug("hash", hash);
+
+  const isValid = await verify(hash);
+
+  debug("isValid", isValid);
 };
 
 const addButtonComposeView = (composeView: ComposeView) => {
@@ -67,12 +89,15 @@ const addButtonComposeView = (composeView: ComposeView) => {
     debug("presending", event);
 
     // fetch sender, recipients, subject, body
-    const metadataHTML = composeView.getMetadataForm();
-    const subject = composeView.getSubject();
+    const recipients = composeView.getToRecipients();
+    const sender = composeView.getFromContact();
     const bodyHTML = composeView.getBodyElement();
 
     // TODO: is there an attack vector here? two different emails with the same hash due to using metadata in the body html?
-    const email = metadataHTML.outerHTML + subject + bodyHTML.outerHTML;
+    const email =
+      recipients.map(toString).join(";") +
+      toString(sender) +
+      bodyHTML.outerHTML;
 
     const hash = calculateHash(email);
 
@@ -81,7 +106,19 @@ const addButtonComposeView = (composeView: ComposeView) => {
     debug("signature", signature);
 
     composeView.setBodyHTML(bodyHTML.outerHTML + signature);
-    // event.fullEmailText = fullEmailText + signature;
+
+    // TODO: send into api and check response, if it fails, throw error and stop sending
+    try {
+      const isSuccess = send(hash);
+
+      if (true) {
+        throw new Error("Email not sent");
+      }
+    } catch (error) {
+      debug("error", error);
+
+      event.cancel();
+    }
   });
 
   composeView.on("destroy", function (event: any) {

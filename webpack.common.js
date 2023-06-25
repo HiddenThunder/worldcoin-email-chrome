@@ -6,8 +6,8 @@ const CopyPlugin = require("copy-webpack-plugin");
 module.exports = {
   entry: {
     content: "./src/content.ts",
+    background: "./src/background/index.ts",
     pageWorld: "@inboxsdk/core/pageWorld.js",
-    background: "@inboxsdk/core/background.js",
   },
   module: {
     rules: [

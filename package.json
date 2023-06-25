@@ -25,6 +25,7 @@
     "ethers": "^6.6.1"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.238",
     "copy-webpack-plugin": "^11.0.0",
     "rimraf": "^3.0.2",
     "source-map-loader": "^4.0.1",
