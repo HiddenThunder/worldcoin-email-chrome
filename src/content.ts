@@ -13,7 +13,7 @@ import { calculateHash } from "./utils/hash";
 debug("content script loaded");
 
 const toString = (contact: Contact) => {
-  return `${contact.name} <${contact.emailAddress}>`;
+  return `${contact.name || ""} <${contact.emailAddress}>`;
 };
 
 const setupSDK = (sdk: InboxSDK) => {
@@ -111,6 +111,8 @@ const addButtonComposeView = (composeView: ComposeView) => {
     const recipients = composeView.getToRecipients();
     const sender = composeView.getFromContact();
     const bodyHTML = composeView.getBodyElement();
+
+    debug("metadataHTML", { sender, recipients, bodyHTML });
 
     // TODO: is there an attack vector here? two different emails with the same hash due to using metadata in the body html?
     const email = recipients.map(toString).join(";") + toString(sender); // + bodyHTML.outerHTML;
