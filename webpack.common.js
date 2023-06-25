@@ -5,28 +5,29 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: {
-    content: './src/content.js',
-    pageWorld: '@inboxsdk/core/pageWorld.js',
-    background: '@inboxsdk/core/background.js',
+    content: "./src/content.ts",
+    pageWorld: "@inboxsdk/core/pageWorld.js",
+    background: "@inboxsdk/core/background.js",
   },
   module: {
     rules: [
       {
-        test: /\.m?jsx?$/,
-        enforce: "pre",
-        use: ["source-map-loader"],
-      }
-    ]
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+    ],
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, "dist"),
     clean: true,
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
   },
   plugins: [
     new CopyPlugin({
-      patterns: [
-        { from: "static" },
-      ],
+      patterns: [{ from: "static" }],
     }),
   ],
 };
