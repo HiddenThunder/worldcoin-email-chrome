@@ -75,7 +75,11 @@ const verifyMessage = async (messageView: MessageView) => {
 
   bodyHTML.innerHTML =
     `
-    This message was scanned by Worldcoin Email 🌎:
+    ${
+      isRealHuman
+        ? `This message is written by a real human being 💌`
+        : `This message is not verified and probably written by a robot 🤖`
+    }
     <br />
     ${isRealHuman ? "✅✅✅" : "❌❌❌"}
     <br />
@@ -89,12 +93,13 @@ const addButtonComposeView = (composeView: ComposeView) => {
   composeView.addButton({
     title: "Signed w/ World ID",
     iconUrl:
-      "https://em-content.zobj.net/thumbs/240/apple/354/check-mark-button_2705.png",
-    // "https://lh5.googleusercontent.com/itq66nh65lfCick8cJ-OPuqZ8OUDTIxjCc25dkc4WUT1JG8XG3z6-eboCu63_uDXSqMnLRdlvQ=s128-h128-e365",
+      // love letter
+      "https://em-content.zobj.net/thumbs/240/apple/354/love-letter_1f48c.png",
+    // check mark
+    // "https://em-content.zobj.net/thumbs/240/apple/354/check-mark-button_2705.png",
     onClick(event: any) {
-      const user = { email: "123@id.worldcoinemail.org" }; // get from session
       alert(
-        `This message is signed with Worldcoin Email 🌎 using account ${user.email}`
+        `This message is signed with Worldcoin Email 💌 using your account`
       );
     },
   });
